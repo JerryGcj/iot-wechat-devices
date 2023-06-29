@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>用户登记</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/login.css" />
+		<link rel="stylesheet" href="http://at.alicdn.com/t/font_193604_z0flesbowe.css">
+		<link rel="stylesheet" href="http://at.alicdn.com/t/font_193604_z0flesbowe.css">
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="header">
+				<div class="title">
+					<span>用户登记</span>
+				</div>
+				<div class="sub-title">
+					<span>用户登记设备卡号和手机号信息</span>
+				</div>
+			</div>
+			<form class="form" method="post">
+				<input type="hidden" id="openid" name="openid" th:value="${openid}">
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="cardId" name="cardId" maxlength="8" autocomplete="off" class="input" placeholder="请输入设备卡号" required>
+					</div>
+					<a class="captcha-scan"><i style="font-size: 25px" class="iconfont icon-scan-o" onclick="getMessage()"></i></a>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="phone" name="phone" maxlength="11" autocomplete="off" class="input" placeholder="请输入手机号码">
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="captchaSms" name="captchaSms" maxlength="6" autocomplete="off" class="input" placeholder="请输入短信验证码">
+					</div>
+					<a class="captcha-sms">获取验证码</a>
+				</div>
+				<button type="submit" class="login-button">登记</button>
+			</form>
+			<div class="tip"></div><p></p>
+			<div class="tips"><span><h4>点击"扫码框"，对着设备的条形码扫一扫</h4></span></div>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js'></script>
+		<script src="http://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js"></script>
+		<script type="text/javascript">
+			let openid = '';
+			$(function () {
+				openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请从微信公众号进入页面');
+					return false;
+				}
+				var url = window.location.href;
+				$.ajax({
+					data:{"url":url},
+					dataType: "json",
+					url: "/iot-wechat-douyin/getConfig",
+					success: function(data) {
+						var appId=data.appId;
+						var timestamp=data.timestamp;
+						var nonceStr=data.nonceStr;
+						var signature=data.signature;
+						wx.config({
+							debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+							appId: appId, // 必填，公众号的唯一标识
+							timestamp: timestamp, // 必填，生成签名的时间戳
+							nonceStr: nonceStr, // 必填，生成签名的随机串
+							signature: signature,// 必填，签名
+							jsApiList: ['checkJsApi', 'scanQRCode'] // 必填，需要使用的JS接口列表
+						});
+					}
+				});
+			});
+
+			const phoneReg = /^1[0-9]{10}$/;
+
+			// 点击发送验证码
+			$('.captcha-sms').click(function() {
+				let phone = $("#phone").val();
+				if (!phone) {
+					layer.msg('请输入手机号码');
+					return false;
+				}
+				if (!phoneReg.test(phone)) {
+					layer.msg('手机号格式不正确');
+					return false;
+				}
+				let cardId = $("#cardId").val();
+				if (!cardId) {
+					layer.msg('请输入卡号');
+					return false;
+				}
+				$.ajax({
+					dataType: "json",
+					url: "/iot-wechat-douyin/ifCardExist",
+					data: {iccid: cardId,operatorType: "3"},
+					success: function (data) {
+						if(data.success){
+							sendCaptcha(phone);
+						}else{
+							layer.msg(data.message);
+							return false;
+						}
+					},
+					error: function () {
+						layer.msg('验证码发送异常');
+						return false;
+					}
+				});
+			});
+
+			/**
+			 * 发送验证码
+			 * @param phone
+			 */
+			function sendCaptcha(phone) {
+				countDownHandler();
+
+				$.ajax({
+					dataType: "json",
+					url: "/iot-wechat-douyin/common/sendCaptcha",
+					data: {mobile: phone},
+					type: "post",
+					success: function (data) {
+						layer.msg(data.msg);
+					},
+					error: function () {
+						layer.msg('验证码发送异常');
+					}
+				});
+			}
+
+			/**
+			 * 验证码倒计时
+			 */
+			function countDownHandler() {
+				let count = 60;
+				const countDown = setInterval(() => {
+					if (count === 0) {
+						$('.captcha-sms').attr('disabled', 'disabled');
+						$('.captcha-sms').text('重新发送');
+						$('.captcha-sms').removeClass('disable');
+						clearInterval(countDown);
+					} else {
+						$('.captcha-sms').attr('disabled', true);
+						$('.captcha-sms').addClass('disable');
+						$('.captcha-sms').text(count + '秒后重发');
+					}
+					count--;
+				}, 1000);
+			}
+
+			// 登记
+			$(".form").submit(function () {
+				let cardId = $("#cardId").val()
+				if (!cardId) {
+					layer.msg('请输入卡号');
+					return false;
+				}
+
+				let phone = $("#phone").val();
+				if (!phone) {
+					layer.msg('请输入手机号码');
+					return false;
+				}
+				if (!phoneReg.test(phone)) {
+					layer.msg('手机号格式不正确');
+					return false;
+				}
+
+				let captchaSms = $("#captchaSms").val()
+				if (!captchaSms) {
+					layer.msg('请输入短信验证码');
+					return false;
+				}
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/register",
+					data: {
+						openid: openid,
+						cardId: cardId,
+						phone: phone,
+						captchaSms: captchaSms,
+						operatorType: 3
+					},
+					type: "post",
+					success: function (res) {
+						layer.close(index);
+						if(res.success) {
+							location.href = "/iot-wechat-douyin/userCenter?openid=" + openid;
+						} else {
+							layer.msg(res.message);
+						}
+					},
+					error: function (e) {
+						layer.close(index);
+						layer.msg('登记失败，请重试！');
+					}
+				});
+				return false;
+			});
+			//扫码
+			function getMessage(){
+				wx.scanQRCode({
+					needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+					scanType: ["barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+					success: function (res) {
+						var str = res.resultStr.split(',')[1];
+						if(/^8986[A-Z0-9]{15,16}$/.test(str) || /^31\d{14}$/.test(str) || /^51\d{12}$/.test(str) || /^86\d{13}$/.test(str)){
+							/*$inp.val(str); $_cls.show();*/
+							document.getElementById("cardId").value = str;
+						}else{
+							layer.msg('请扫描流量卡ICCID或设备SN条形码');
+						}
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

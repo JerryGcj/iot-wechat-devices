@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>卡分配</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/login.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="header">
+				<div class="title">
+					<span>卡分配</span>
+				</div>
+				<div class="sub-title">
+					<span>推广员给店铺分配卡</span>
+				</div>
+			</div>
+			<form class="form" method="post">
+				<input type="hidden" id="openid" name="openid" th:value="${openid}">
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="iccidStart" name="iccidStart" maxlength="8" autocomplete="off" class="input" placeholder="请输入开始卡号" required>
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="iccidEnd" name="iccidEnd" maxlength="8" autocomplete="off" class="input" placeholder="请输入截止卡号" required>
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<select id="operatorType" name="operatorType" class="select" required>
+							<option value="">请选择运营商</option>
+							<option value="1">移动</option>
+							<option value="3">电信</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<select id="storeId" name="storeId" class="select" required>
+							<option value="">请选择店铺</option>
+							<option th:each="item:${storeList}"
+									th:value="${item.id}"
+									th:text="${item.userCompany}">
+							</option>
+						</select>
+					</div>
+				</div>
+				<button type="submit" class="login-button">确定</button>
+			</form>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script>
+			var unSelected = "#888";
+			var selected = "#333";
+			$(function () {
+				$("select").css("color", unSelected);
+				$("option").css("color", selected);
+				$("select").change(function () {
+					var selItem = $(this).val();
+					if (selItem == $(this).find('option:first').val()) {
+						$(this).css("color", unSelected);
+					} else {
+						$(this).css("color", selected);
+					}
+				});
+			})
+		</script>
+		<script type="text/javascript">
+
+			$(".form").submit(function () {
+				let openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请在微信中打开该页面');
+					return false;
+				}
+
+				let iccidStart = $("#iccidStart").val()
+				if (iccidStart.length>8) {
+					layer.msg('请输入8位开始卡号');
+					return false;
+				}
+
+				let iccidEnd = $("#iccidEnd").val();
+				if (iccidEnd.length>8) {
+					layer.msg('请输入8位截止卡号');
+					return false;
+				}
+				let storeId = $("#storeId").val();
+				let operatorType = $("#operatorType").val();
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/saveCardDistribution",
+					data: {
+						openid: openid,
+						iccidStart: iccidStart,
+						iccidEnd: iccidEnd,
+						storeId: storeId,
+						operatorType: operatorType
+					},
+					type: "post",
+					success: function (res) {
+						if (res.success) {
+							layer.msg(res.message, {icon: 1,time: 1000}, function(){
+								location.href="/iot-wechat-douyin/promoterCenter?openid=" + openid;
+							});
+						}else{
+							layer.msg(res.message);
+						}
+						layer.close(index);
+					},
+					error: function (e) {
+						layer.msg('添加失败，请重试！');
+						layer.close(index);
+					}
+				});
+				return false;
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+}
+
+.record-container {
+    background: #fff;
+    padding: 0 15px;
+}
+.record-item {
+    font-size: 14px;
+    padding: 10px 15px;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+.item-left {
+    float: left;
+    margin-top: 12px;
+    margin-left: 15px;
+}
+.record-status {
+    color: #333;
+}
+
+.record-type {
+    font-size: 18px;
+    padding: 10px 15px;
+    line-height: 1.8;
+    border-bottom: 0px solid #eee;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.record-ques {
+    font-size: 18px;
+    padding: 20px 15px;
+    clear: both;
+    line-height: 1.8;
+    border-bottom: 0px solid #eee;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.record-que {
+    padding: 1px 15px;
+    clear: both;
+    border-bottom: 0px solid #eee;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.tl-ac-span{
+    padding: 3px 15px;
+    font-size: 12px;
+    color: gray;
+    line-height: 20px;
+    text-align: center;
+    overflow: hidden;
+    background: white;
+    border-radius: 12px;
+    border-color: gray;
+    border-style:solid;
+    border-width:1px;
+}
+.active{
+    color: #786cff;
+    background-color: #bcc7f5;
+}
+
+.textarea-inherit {
+    width: 100%;
+    overflow: auto;
+    word-break: break-all;
+    border:0;
+    border-radius:5px;
+    background-color:rgba(241,241,241,.98);
+    resize: none;
+}
+
+.botFilter {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    border-top: 0px solid #d4d4d4;
+}
+.botFilter ul {
+    background-color: transparent;
+    display: -webkit-box;
+    text-align: center;
+}
+.botFilter ul li {
+    -webkit-box-flex: 1;
+    box-sizing: border-box;
+    padding: 15px 0;
+}
+.btnbox {
+    text-align: center;
+    padding: 25px 0;
+}
+.btnbox button {
+    width: 95%;
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: 15px;
+    background-color: #5878ee;
+    border: 1px solid #786cff;
+    border-radius: 5px;
+    padding: 8px 16px;
+    outline: none;
+}
+.btnbox button:hover {
+    background-color: #5878ee;
+    border: 1px solid #786cff;
+    cursor: pointer;
+}

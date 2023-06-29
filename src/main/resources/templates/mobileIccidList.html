@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<title>卡列表</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/bootstrap/css/bootstrap.css" />
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<style type="text/css">
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				font-family: "Ping Fang";
+			}
+			/* 套餐详情 */
+			.order {
+				list-style: none;
+				margin: 10px;
+				padding: 0;
+			}
+			.order li {
+				padding: 10px;
+				margin-top: 10px;
+				height: 40px;
+				border-radius: 10px;
+				box-shadow: 3px 5px 21px rgba(35,24,21,0.05);
+				background-color: #f2f2f2;
+			}
+			.order li span {
+				height: 50px;
+				padding-right: 10px;
+				font-size: 16px;
+				font-weight: bold;
+				font-style: italic;
+				color: #28b6ff;
+			}
+			.order li div {
+				display: inline-block;
+				vertical-align: middle;
+			}
+			.order li div p {
+				margin: 0;
+			}
+			.order li div p:first-child {
+				font-size: 12px;
+				color: #333;
+			}
+			.order li div p:last-child {
+				font-size: 12px;
+				color: #999;
+				padding-top: 3px;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<input type="hidden" id="openid" th:value="${openid}">
+				<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+					<!-- 订单记录 -->
+					<ul class="order" id="cardList" th:each="card,index: ${cardList}">
+						<li>
+							<div style="text-align: center">
+								<span th:onclick="enterHome([[${card.iccid}]])" th:text="${card.virtualIccid}"></span>
+								&nbsp;&nbsp;
+								<span th:text="${card.remark}"></span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		let openid = '';
+		$(function () {
+			openid = $("#openid").val();
+		});
+		function enterHome(str){
+			window.parent.frames.location.href="/iot-wechat-douyin/mobile/home?openid=" + openid+"&iccid="+str;
+		}
+	</script>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>我的优惠券</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/coupon.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<input type="hidden" id="operatorType" th:value="${operatorType}">
+		<div class="page-container">
+<!--			<div class="page-header">-->
+<!--				<div class="page-head-back">-->
+<!--                    <img src="/iot-wechat-cpe/images/btn-back.png">-->
+<!--				</div>-->
+<!--				<div class="page-head-title">-->
+<!--					我的优惠券-->
+<!--				</div>-->
+<!--			</div>-->
+			<div class="page-body">
+				<div class="nav">
+					<ul>
+						<li class="active">未使用</li>
+						<li class="">已使用</li>
+						<li class="">已过期</li>
+					</ul>
+				</div>
+				<div class="nav-container">
+					<div class="empty" style="display: none;">
+						<img src="/iot-wechat-douyin/images/empty.png">
+						<p>暂无相关优惠券~</p>
+					</div>
+					<div class="coupon">
+						<ul>
+							<!--<li class="coupon-item">
+								<div class="coupon-left">
+									<p class="coupon-title">充值抵扣券</p>
+									<div class="coupon-price">
+										<span class="coupon-sign">￥</span><span class="coupon-money">100</span>
+										<span class="coupon-limit">满200可用</span>
+									</div>
+									<p class="coupon-date">2021/06/25~2021/07/02</p>
+								</div>
+								<div class="coupon-right">
+									<button class="coupon-btn" type="button">去使用</button>
+								</div>
+							</li>
+							<li class="coupon-item coupon-item-disabled">
+								<img src="/images/coupon_used.png" class="coupon-status">
+								<div class="coupon-left">
+									<p class="coupon-title">充值抵扣券</p>
+									<div class="coupon-price">
+										<span class="coupon-sign">￥</span><span class="coupon-money">100</span>
+										<span class="coupon-limit">满200可用</span>
+									</div>
+									<p class="coupon-date">2021/06/25~2021/07/02</p>
+								</div>
+								<div class="coupon-right">
+									<button class="coupon-btn" type="button">已使用</button>
+								</div>
+							</li>
+							<li class="coupon-item coupon-item-disabled">
+								<img src="/images/coupon_expired.png" class="coupon-status">
+								<div class="coupon-left">
+									<p class="coupon-title">充值抵扣券</p>
+									<div class="coupon-price">
+										<span class="coupon-sign">￥</span><span class="coupon-money">100</span>
+										<span class="coupon-limit">满200可用</span>
+									</div>
+									<p class="coupon-date">2021/06/25~2021/07/02</p>
+								</div>
+								<div class="coupon-right">
+									<button class="coupon-btn" type="button">已过期</button>
+								</div>
+							</li>-->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				queryCoupon(0);
+			});
+
+			// 选项卡切换
+			$('.nav ul li').click(function() {
+				$(this).addClass('active').siblings().removeClass('active');
+
+				let index = $(this).index();
+				switch (index) {
+					case 0:
+						console.log("未使用");
+                        queryCoupon(0);
+						break;
+					case 1:
+						console.log("已使用");
+                        queryCoupon(1);
+						break;
+					case 2:
+						console.log("已过期");
+                        queryCoupon(2);
+						break;
+				}
+			});
+
+			function queryCoupon(type) {
+				let openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请在微信中打开该页面');
+					return false;
+				}
+				let operatorType = $("#operatorType").val();
+				$(".coupon").hide();
+				$(".empty").hide();
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/lxfunicom/queryCoupon",
+					data: {
+						openid: openid,
+						type: type,
+						operatorType:operatorType
+					},
+					type: "get",
+					success: function (res) {
+						layer.close(index);
+						if (res.success && res.result.length > 0) {
+							let temp = '<ul>';
+							for (let index in res.result) {
+								let item = res.result[index];
+								// 未使用
+								if (type === 0) {
+									temp += '  <li class="coupon-item">\n' +
+											'    <div class="coupon-left">\n' +
+											'      <p class="coupon-title">充值抵扣券</p>\n' +
+											'      <div class="coupon-price">\n' +
+											'        <span class="coupon-sign">￥</span><span class="coupon-money">' + item.money + '</span>\n' +
+											'        <span class="coupon-limit">满' + item.limitMoney + '可用</span>\n' +
+											'      </div>\n' +
+											'      <p class="coupon-date">' + item.validStart+ '~' + item.validEnd + '</p>\n' +
+											'    </div>\n' +
+											'    <div class="coupon-right">\n' +
+											'      <button class="coupon-btn" type="button">去使用</button>\n' +
+											'    </div>\n' +
+											'  </li>';
+
+								} else if(type === 1) { // 已使用
+									temp += '  <li class="coupon-item coupon-item-disabled">\n' +
+											'    <img src="/iot-wechat-cpe/images/coupon_used.png" class="coupon-status">\n' +
+											'    <div class="coupon-left">\n' +
+											'      <p class="coupon-title">充值抵扣券</p>\n' +
+											'      <div class="coupon-price">\n' +
+											'        <span class="coupon-sign">￥</span><span class="coupon-money">' + item.money + '</span>\n' +
+											'      	 <span class="coupon-limit">满' + item.limitMoney + '可用</span>\n' +
+											'      </div>\n' +
+											'      <p class="coupon-date">' + item.validStart+ '~' + item.validEnd + '</p>\n' +
+											'    </div>\n' +
+											'    <div class="coupon-right">\n' +
+											'      <button class="coupon-btn" type="button">已使用</button>\n' +
+											'    </div>\n' +
+											'  </li>';
+								} else if(type === 2) { // 已过期
+									temp += '  <li class="coupon-item coupon-item-disabled">\n' +
+											'    <img src="/iot-wechat-cpe/images/coupon_expired.png" class="coupon-status">\n' +
+											'    <div class="coupon-left">\n' +
+											'      <p class="coupon-title">充值抵扣券</p>\n' +
+											'      <div class="coupon-price">\n' +
+											'        <span class="coupon-sign">￥</span><span class="coupon-money">' + item.money + '</span>\n' +
+											'        <span class="coupon-limit">满' + item.limitMoney + '可用</span>\n' +
+											'      </div>\n' +
+											'      <p class="coupon-date">' + item.validStart+ '~' + item.validEnd + '</p>\n' +
+											'    </div>\n' +
+											'    <div class="coupon-right">\n' +
+											'    <button class="coupon-btn" type="button">已过期</button>\n' +
+											'    </div>\n' +
+											'  </li>';
+								}
+							}
+							temp += '</ul>';
+							$(".coupon").show();
+							$(".coupon").html(temp);
+						} else {
+							$(".empty").show();
+						}
+					},
+					error: function (e) {
+						layer.close(index);
+						layer.msg('查询优惠券失败，请重试！');
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,124 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Ping Fang";
+}
+/* 套餐详情 */
+.detail {
+    list-style: none;
+    margin: 10px;
+    padding: 0;
+}
+.detail li {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    box-shadow: 3px 5px 21px rgba(35,24,21,0.05);
+    position: relative;
+    background-color: #f2f2f2;
+}
+.detail li p {
+    font-size: 14px;
+    letter-spacing: 1px;
+    line-height: 20px;
+    color: #999;
+}
+.detail li p span {
+    color: #000;
+}
+
+/* 状态 */
+.status {
+    display: inline-block;
+    text-align: center;
+    line-height: 26px;
+    width: 70px;
+    border-radius: 5px;
+}
+/* 停用 */
+.status-deactivated {
+    background-color: rgba(255,76,52,0.1);
+    color: red !important;
+}
+
+/* 使用中 */
+.status-activated {
+    background-color: rgba(111,212,71,0.1);
+    color: green !important;
+}
+
+/* 未生效 */
+.status-noactivated {
+    background-color: rgba(157, 105, 212, 0.1);
+    color: gray !important;
+}
+/* 右上角标识 */
+.flag {
+    background-repeat: no-repeat;
+    background-size: 60px 60px;
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+/* 已到期 */
+.flag-expired {
+    background-image: url(/iot-wechat-douyin/images/expired-icon.png);
+}
+/* 未到期 */
+.flag-unexpired {
+    background-image: url(/iot-wechat-douyin/images/unexpired-icon.png);
+}
+.refund {
+    background-repeat: no-repeat;
+    background-size: 60px 60px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 90px;
+    margin-right: 20px;
+}
+.btn-refund {
+    width: 35px;
+    height: 20px;
+    line-height: 20px;
+    margin: 0 auto;
+    text-align: center;
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+    background: #e5e1e1;
+    color: #fff;
+    font-size: 10px;
+}
+
+.cancel-refund {
+    width: 50px;
+    height: 20px;
+    line-height: 20px;
+    margin: 0 auto;
+    text-align: center;
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+    background: #e5e1e1;
+    color: #ee0707;
+    font-size: 11px;
+}
+
+.norecord {
+    z-index: 99;
+    padding: 55px 27px;
+    text-align: center;
+}
+
+.norecord img {
+    width: 154px;
+    height: 100%;
+    margin-bottom: 24px;
+}
+
+.norecord p {
+    font-size: 14px;
+    color: grey;
+}

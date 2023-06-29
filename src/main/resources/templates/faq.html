@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>问题反馈</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="screen-orientation" content="portrait">
+		<meta name="x5-orientation" content="portrait">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/faq.css" />
+		<style type="text/css">
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<section class="aui-flexView">
+			<div class="record-type">常见问题</div>
+			<section class="aui-scrollView">
+				<div class="aui-tab" data-ydui-tab>
+					<div class="tab-panel">
+						<div class="tab-panel-item tab-active">
+							<div class="tab-item">
+								<ul class="accordion" th:each="tagDetails,index: ${questionTagList}">
+									<li class="aui-menu-item b-line">
+										<div class="link">
+											<i class="icon aui-icon-q"></i>
+											<span th:text="${tagDetails.tagName}"></span>
+											<i class="icon icon-dow"></i>
+										</div>
+										<div class="submenu">
+											<i class="icon icon-a"></i>
+											<p><span th:text="${tagDetails.tagDesc}"></span></p>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="record-ques">问题和意见</div>
+				<div class="record-que">
+					<textarea id="advice" class="textarea-inherit" rows="10" placeholder="简要描述您要反馈的问题和意见"></textarea>
+				</div>
+				<div class="botFilter"></div>
+				<div class="botFilter">
+					<div class="btnbox">
+						<button type="button" id="submit">提交</button>
+					</div>
+				</div>
+			</section>
+
+		</section>
+
+	</body>
+	<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+	<script src="/iot-wechat-douyin/layer/layer.js"></script>
+	<script src="/iot-wechat-douyin/js/tab.js"></script>
+	<script src="/iot-wechat-douyin/js/fold.js"></script>
+	<script type="text/javascript">
+		/*let typeYM=[];
+		$("#tagList span").click(function(){
+			if(!$(this).hasClass("active")){
+				$(this).addClass("active").siblings("span").removeClass("active"); //单选
+				typeYM.push($(this).attr("value"));
+			}else{
+				$(this).removeClass("active");
+				typeYM.remove($(this).attr("value"));
+			}
+			//取该蓝色标签的value值
+			console.log(typeYM);
+		})
+		Array.prototype.remove = function(val) {
+			for (let i = 0; i < this.length; i++) {
+				if (this[i] == val) this.splice(i, 1);
+			}
+		};*/
+
+		$("#submit").click(function () {
+			let advice = $("#advice").val();
+			let openid = $("#openid").val();
+			if (!advice) {
+				layer.msg('请输入您的问题和意见');
+				return false;
+			}
+			//let tagIds = typeYM.toString();
+			let index = layer.load(2);
+			$.ajax({
+				url: "/iot-wechat-douyin/saveProblem",
+				data: {
+					openid: openid,
+					advice: advice
+				},
+				type: "post",
+				success: function (res) {
+					layer.close(index);
+					if(res.success) {
+						layer.msg(res.message, {icon: 1,time: 2000}, function(){
+							location.href="/iot-wechat-douyin/userCenter?openid=" + openid;
+						});
+					} else {
+						layer.msg(res.message);
+					}
+				},
+				error: function (e) {
+					layer.close(index);
+					layer.msg('提交失败，请重试！');
+				}
+			});
+		});
+	</script>
+
+</html>

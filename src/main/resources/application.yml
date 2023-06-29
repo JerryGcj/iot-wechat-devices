@@ -1,0 +1,69 @@
+server:
+  port: 8086
+  servlet:
+      context-path: /iot-wechat-devices
+logging:
+  file:
+    name: logs/log_info.log
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+  #  mvc:
+#    static-path-pattern: /images/**
+#  resources:
+#    static-locations: file:D://mms/review/
+  redis:
+    database: 0
+    host: 114.116.19.107
+    lettuce:
+      pool:
+        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
+        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
+        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
+        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
+      shutdown-timeout: 100ms
+    password: 'ize1u9ue9t'
+    port: 6379
+  boot:
+    admin:
+      client:
+        api-path: /instances
+        url: http://172.18.49.129:9090
+        instance:
+          prefer-ip: true
+        username: 'admin'
+        password: 'p@ssw0rd'
+
+  application:
+    name: iot-wechat-devices
+
+realname:
+  #移动实名认证
+  appid: SZHY01
+  secret: et4rTXERiB7l16l0nEl09w==
+  url: https://ec.iot.10086.cn/authApi/service/wx/realnameH5/stepOne
+
+electron:
+
+unicom:
+
+valid:
+  appId: a80eff7c72513752a09f858f106dd2b4
+  appKey: f46237bbb4c9ae1dd72eb5430a288e2c
+  agentId: 1212
+  offerNbr: 00000000C6A8FCD994AC116DE053AA1410ACB15C
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+

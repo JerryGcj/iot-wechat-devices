@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>套餐购买</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/recharge.css" />
+		<style type="text/css">
+			.right-arrow:before {
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				content: '';
+				border-top: 1px solid #666;
+				border-right: 1px solid #666;
+				transform: rotate(45deg);
+			}
+			.color-red {
+				color: #fa2209!important;
+			}
+			.plan-name {
+				font-size: 16px;
+			}
+			.order-detail-container {
+				background-color: #fff;
+				margin: 20px 0;
+			}
+			.order-detail {
+				padding: 0 13px;
+				font-size: 16px;
+				color: #303133;
+			}
+			.order-detail .detail-item {
+				padding: 11px 0;
+				border-bottom: 0.5px solid #f8f8f8;
+				display: flex!important;
+			}
+			.detail-item .item-left {
+				flex: 0 0 50%;
+			}
+			.detail-item .item-right {
+				flex: 0 0 50%;
+				text-align: right;
+			}
+			.order-footer {
+				border-top: 1px solid #eee;
+				margin-top: 5px;
+				display: flex!important;
+				background-color: #fff;
+				padding-left: 12px;
+				position: fixed;
+				bottom: 0px;
+				width: 100%;
+			}
+			.order-footer .footer-left {
+				font-size: 14px;
+				line-height: 46px;
+				color: #777;
+				flex: 4;
+			}
+			.order-footer .order-btn {
+				flex: 2;
+				background: #f9211c;
+				color: #fff;
+				text-align: center;
+				line-height: 46px;
+				font-size: 14px;
+			}
+
+			.coupon-container {
+				background-color: #fff;
+				margin: 20px 0;
+				padding: 14px;
+				font-size: 14px;
+			}
+			.coupon-container .coupon-title {
+				text-align: center;
+				margin-bottom: 14px;
+			}
+
+			.coupon-container .coupon-list {
+				height: 360px;
+				overflow: auto;
+			}
+
+			.coupon-list .coupon-item {
+				margin-bottom: 12px;
+				background: linear-gradient(-128deg,#ff6d6d,#ff3636);;
+				display: flex;
+				border-radius: 4px;
+				color: #fff;
+				height: 90px;
+			}
+			.coupon-item .coupon-item-left {
+				flex: 0 0 32%;
+				text-align: center;
+				display: flex!important;
+				flex-direction: column;
+				justify-content: center;
+			}
+			.coupon-item-left .coupon-price {
+				font-weight: 700;
+				font-size: 26px;
+			}
+			.coupon-item-left .coupon-limit {
+				font-size: 12px;
+			}
+			.coupon-item .coupon-right {
+				padding: 16px 10px;
+				justify-content: space-between;
+				flex-direction: column;
+				display: -webkit-flex!important;
+			}
+			.coupon-right .coupon-name {
+				font-size: 16px;
+			}
+			.coupon-right .coupon-date {
+				font-size: 12px;
+			}
+			.coupon-container .dont-use-coupon {
+				width: 90%;
+				height: 40px;
+				margin: 0 auto;
+				margin-top: 20px;
+				border: 0.5px solid #e3e3e3;
+				border-radius: 5px;
+				color: #888;
+				text-align: center;
+				line-height: 40px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<input type="hidden" id="iccid" th:value="${user?.iccid}">
+		<input type="hidden" id="isNew" th:value="${isNew}">
+		<div class="container">
+			<div class="account-panel" id="accountBalance" style="display: flex!important">
+				<div class="panel-label">
+					<span>账户余额</span>
+				</div>
+				<div class="panel-balance">
+					<span th:text="'￥' + ${user?.balance ?: '0'}"></span>
+				</div>
+			</div>
+			<div class="recharge-panel">
+				<div class="recharge-label">
+					<span>基础包</span>
+				</div>
+				<div class="recharge-plan">
+					<div class="recharge-plan-item" th:each="package,index: ${packageList}">
+						<span style="display: none" class="create-user" th:text="${package.createUser}"></span>
+						<span style="display: none" class="package-id" th:text="${package.packageId}"></span>
+						<span style="display: none" class="operator-type" th:text="${package.operatorType}"></span>
+						<span style="display: none" class="package-basic" th:text="${package.packageType}"></span>
+						<div class="plan-name">
+							<span th:text="${package.packageName}"></span>
+						</div>
+						<div class="plan-desc">
+							￥<span th:text="${package.salesPrice}"></span>
+						</div>
+					</div>
+				</div>
+				<div class="recharge-label" style="clear: both;">
+					<span>加油包</span>
+				</div>
+				<div class="recharge-plan">
+					<div class="recharge-plan-item" th:each="package,index: ${packageList1}">
+						<span style="display: none" class="create-user" th:text="${package.createUser}"></span>
+						<span style="display: none" class="operator-type" th:text="${package.operatorType}"></span>
+						<span style="display: none" class="package-id" th:text="${package.packageId}"></span>
+						<span style="display: none" class="package-basic" th:text="${package.packageType}"></span>
+						<div class="plan-name">
+							<span th:text="${package.packageName}"></span>
+						</div>
+						<div class="plan-desc">
+							￥<span th:text="${package.salesPrice}"></span>
+						</div>
+					</div>
+				</div>
+				<div class="recharge-submit">
+					<button class="button" id="wxPay" onclick="pay()">立即购买</button>
+					<button class="button" id="prestorePay" onclick="openOrderModal()">立即购买</button>
+				</div>
+			</div>
+			<div class="recharge-describe">
+				<div class="recharge-label1">
+					<span>充值说明</span>
+				</div>
+				<div class="recharge-content">
+					<span>1. 全国漫游不限速，自然月的月底为月结日，届时流量将清零.<br>
+						2. 基础套餐流量不足时，可充值加油包，加油包限当月使用.<br>
+						3. 需充值一个基础套餐，重复充值基础套餐仅能延长有效期.<br>
+						4. 每月月初几天为系统出账期，到账延时长，建议提前充值.
+					</span>
+				</div>
+			</div>
+
+			<!-- 订单modal -->
+			<div class="order-detail-container" style="display: none">
+				<div class="order-detail">
+					<div class="detail-item">
+						<span class="item-left">订购套餐：</span>
+						<span class="item-right color-red" id="packageName">100G流量</span>
+					</div>
+					<div class="detail-item">
+						<span class="item-left">订单总金额：</span>
+						<span class="item-right color-red">￥<span id="totalPrice"></span></span>
+					</div>
+					<!--<div class="detail-item">
+						<span class="item-left">优惠券：</span>
+						<div class="item-right no-coupon">
+							<span>无优惠券可用</span>
+						</div>
+						<div class="item-right have-coupon" onclick="openCouponModal()">
+							<span style="display: none" id="couponId"></span>
+							<span class="color-red" id="couponDesc">有1张优惠券</span>
+							<span class="right-arrow"></span>
+						</div>
+					</div>-->
+					<div class="detail-item">
+						<span class="item-left">支付方式：</span>
+						<span class="item-right color-red">余额支付</span>
+					</div>
+				</div>
+				<div class="order-footer">
+					<div class="footer-left">实付款：<span class="color-red">￥<span id="price">100.00</span></span></div>
+					<span class="order-btn" id="orderSubmit" onclick="toOrder()">余额支付</span>
+				</div>
+			</div>
+
+			<!-- 优惠券modal -->
+			<div class="coupon-container" style="display: none">
+				<div class="coupon-title">选择优惠券</div>
+				<div class="coupon-list" id="couponList">
+					<div class="coupon-item">
+						<div class="coupon-item-left">
+							<span>￥<span class="coupon-price">10.00</span></span>
+							<span class="coupon-limit">满100.00元可用</span>
+						</div>
+						<div class="coupon-right">
+							<span class="coupon-name">满100减10</span>
+							<span class="coupon-date">有效期：2021/06/25~2021/07/02</span>
+						</div>
+					</div>
+				</div>
+				<div class="dont-use-coupon" onclick="dontUseCoupon()">不使用优惠券</div>
+			</div>
+		</div>
+	</body>
+	<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+	<script src="/iot-wechat-douyin/layer/layer.js"></script>
+	<script type="text/javascript">
+		let openid = '';
+		$(function () {
+			openid = $("#openid").val();
+		});
+		let iccid = '';
+		$(function () {
+			iccid = $("#iccid").val();
+		});
+		let isNew = '';
+		$(function () {
+			isNew = $("#isNew").val();
+			var accountBalance=document.getElementById('accountBalance');
+			var wxPay=document.getElementById('wxPay');
+			var prestorePay=document.getElementById('prestorePay');
+			//新用户
+			if(isNew=="0"){
+				accountBalance.style.display='block;flex!important';
+				wxPay.style.display='none';
+				prestorePay.style.display='block';
+			}else{
+				accountBalance.style.display='none';
+				wxPay.style.display='block';
+				prestorePay.style.display='none';
+			}
+		});
+		let operator;
+		let orderModalIndex;
+		let couponModalIndex;
+		let totalPrice;
+		let couponsCount;
+
+		// 选中套餐样式
+		$('.recharge-plan-item').click(function() {
+			// $(this).addClass('active').siblings().removeClass('active');
+			$(".recharge-plan-item").removeClass("active");
+			$(this).addClass("active");
+		})
+
+		/**
+		 * 打开订单modal
+		 */
+		function openOrderModal() {
+			if (!openid) {
+				layer.msg('请在微信中打开该页面');
+				return false;
+			}
+			// 判断是否选择套餐
+			let selected = $('.recharge-plan-item.active');
+			if (selected.length == 0) {
+				layer.msg('请选择套餐');
+				return false;
+			}
+			// 获取选中套餐的信息
+			let packageName = selected.find(".plan-name span").text();
+			let packageBasic = selected.find(".package-basic").text();
+
+
+			totalPrice = selected.find(".plan-desc span").text();
+			$("#packageName").text(packageName);
+			$("#totalPrice").text(totalPrice);
+			$("#price").text(totalPrice);
+
+			// 显示有几张优惠券
+			/*couponsCount = '[[${user?.couponsCount}]]';
+			if (packageBasic==0 && couponsCount > 0) {
+				$(".no-coupon").hide();
+				$(".have-coupon").show();
+				$("#couponDesc").text("有" + couponsCount + "张优惠券");
+			}else{
+				$(".no-coupon").show();
+				$(".have-coupon").hide();
+			}*/
+			// 显示订单modal
+			orderModalIndex = layer.open({
+				type:1,
+				title: false,
+				offset: 'b',
+				shadeClose: true,
+				closeBtn: 0,
+				move: false,
+				anim: 2,
+				area:['100%', '50%'],
+				content: $('.order-detail-container')
+			});
+		}
+		function pay() {
+			let openid = $("#openid").val();
+			if (!openid) {
+				layer.msg('请在微信中打开该页面');
+				return false;
+			}
+			// 判断是否选择套餐
+			let selected = $('.recharge-plan-item.active');
+			if (selected.length == 0) {
+				layer.msg('请选择套餐');
+				return false;
+			}
+			// 获取选中套餐的信息
+			let packageName = selected.find(".plan-name span").text();
+			let packageBasic = selected.find(".package-basic").text();
+			let packageId = selected.find(".package-id").text();
+			let operatorType = selected.find(".operator-type").text();
+			let price = selected.find(".plan-desc span").text();
+			let createUser = selected.find(".create-user").text();
+			operator = operatorType;
+			let index = layer.load(2);
+			$.ajax({
+				url: "/iot-wechat-douyin/directPurchase",
+				data: {
+					openid: openid,
+					productId: packageId,
+					price: price,
+					packageName: packageName,
+					operatorType: operatorType,
+					createUser: createUser
+				},
+				type: "post",
+				success: function (res) {
+					layer.close(index);
+					if (res.success) {
+						if (typeof WeixinJSBridge == "undefined") {
+							if (document.addEventListener) {
+								document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+							} else if (document.attachEvent) {
+								document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+								document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+							}
+						} else {
+							onBridgeReady(res.result,openid);
+						}
+					} else {
+						layer.msg(res.message);
+					}
+				},
+				error: function (e) {
+					layer.close(index);
+					layer.msg('充值失败，请重试！');
+				}
+			});
+		}
+
+		function onBridgeReady(data,openid){
+			WeixinJSBridge.invoke( 'getBrandWCPayRequest', data,
+					function(res) {
+						if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+							console.log('支付成功');
+							if(operator==2){
+								location.href="/iot-wechat-douyin/unicomCenter?openid="+openid;
+							}
+							if(operator==3){
+								location.href="/iot-wechat-douyin/userCenter?openid="+openid;
+							}
+						} else if (res.err_msg == "get_brand_wcpay_request:cancel"){
+							layer.msg('支付取消');
+						} else if (res.err_msg == "get_brand_wcpay_request:fail"){
+							layer.msg('支付失败');
+							WeixinJSBridge.call('closeWindow');
+						}
+					});
+		}
+		/**
+		 * 打开优惠券modal
+		 */
+		function openCouponModal() {
+			// 获取优惠券
+			queryCoupon();
+			// 显示优惠券modal
+			couponModalIndex = layer.open({
+				type:1,
+				title: false,
+				offset: 'b',
+				shadeClose: true,
+				closeBtn: 0,
+				move: false,
+				anim: 2,
+				area:['100%', '50%'],
+				content: $('.coupon-container')
+			});
+		}
+
+		/**
+		 * 获取优惠券
+		 */
+		function queryCoupon() {
+			let index = layer.load(2);
+			$.ajax({
+				url: "/iot-wechat-douyin/queryCoupon",
+				data: {
+					openid: openid,
+					type: 0
+				},
+				type: "get",
+				success: function (res) {
+					layer.close(index);
+					if (res.success && res.result.length > 0) {
+						// 拼接优惠券样式
+						let temp = '';
+						for (let index in res.result) {
+							let item = res.result[index];
+							temp += '  <div class="coupon-item" onclick="selectedCoupon(\'' + item.id + '\',' + item.money + ',' + item.limitMoney + ')">\n' +
+									'    <div class="coupon-item-left">\n' +
+									'      <span>￥<span class="coupon-price">' + item.money + '</span></span>\n' +
+									'      <span class="coupon-limit">满' + item.limitMoney + '元可用</span>\n' +
+									'    </div>\n' +
+									'    <div class="coupon-right">\n' +
+									'      <span class="coupon-name">充值抵扣券</span>\n' +
+									'      <span class="coupon-date">有效期：' + item.validStart + '~' + item.validEnd + '</span>\n' +
+									'    </div>\n' +
+									'  </div>';
+						}
+						$("#couponList").html(temp);
+					}
+				},
+				error: function (e) {
+					layer.close(index);
+					layer.msg('查询优惠券失败，请重试！');
+				}
+			});
+		}
+
+		/**
+		 * 选择优惠券
+		 * @param couponId
+		 * @param couponMoney
+		 * @param couponLimitMoney
+		 * @returns {boolean}
+		 */
+		function selectedCoupon(couponId, couponMoney, couponLimitMoney) {
+			// 判断是否满足使用条件
+			if (totalPrice < couponLimitMoney) {
+				layer.msg("当前优惠券需要满" + couponLimitMoney + "元才能使用");
+				return false;
+			}
+			// 修改显示价格
+			$("#couponDesc").text("-" + couponMoney + "元");
+			$("#price").text(totalPrice - couponMoney);
+			$("#couponId").text(couponId);
+			layer.close(couponModalIndex);
+		}
+
+		/**
+		 * 不使用优惠券
+		 */
+		function dontUseCoupon() {
+			// 恢复原价格
+			$("#couponDesc").text("有" + couponsCount + "张优惠券");
+			$("#price").text(totalPrice);
+			$("#couponId").text('');
+			layer.close(couponModalIndex);
+		}
+
+		/**
+		 * 购买套餐
+		 * @returns {boolean}
+		 */
+		function toOrder() {
+			if (!openid) {
+				layer.msg('请在微信中打开该页面');
+				return false;
+			}
+			let selected = $('.recharge-plan-item.active');
+			if (selected.length == 0) {
+				layer.msg('请选择套餐');
+				return false;
+			}
+			let packageId = selected.find(".package-id").text();
+			if (!packageId) {
+				layer.msg('套餐不存在');
+				return false;
+			}
+			let createUser = selected.find(".create-user").text();
+			let price = selected.find(".plan-desc span").text();
+			document.getElementById("orderSubmit").style.display="none";
+			let index = layer.load(2);
+			$.ajax({
+				url: "/iot-wechat-douyin/packageOrder",
+				data: {
+					openid: openid,
+					packageId: packageId,
+					iccid: iccid,
+					createUser: createUser,
+					price: price,
+					operatorType:2,
+					couponId: $("#couponId").text()
+				},
+				type: "post",
+				success: function (res) {
+					layer.close(index);
+					if (res.success) {
+						layer.msg("购买成功", {icon: 1,time: 1000}, function(){
+							location.href="/iot-wechat-douyin/unicomCenter?openid=" + openid+"&iccid="+iccid;
+						});
+					} else {
+						if(res.message.includes("余额不足")){
+							layer.confirm(res.message, {icon: 5, title:'提示',
+								btn: ['去充值', '不用了']}, function(){
+								location.href="/iot-wechat-douyin/voucherCenter?openid=" + openid+"&operatorType=2&iccid="+iccid;
+							},function () {
+								document.getElementById("orderSubmit").style.display="block";
+							})
+						}else{
+							layer.msg(res.message);
+							document.getElementById("orderSubmit").style.display="block";
+						}
+					}
+					layer.close(couponModalIndex);
+				},
+				error: function (e) {
+					layer.close(index);
+					layer.msg('购买失败，请重试！');
+				}
+			});
+		}
+	</script>
+</html>

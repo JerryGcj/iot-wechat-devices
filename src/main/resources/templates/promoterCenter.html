@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<title>推广中心</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/center.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<input type="hidden" id="money" th:value="${money}">
+		<div>
+			<!--顶部个人信息-->
+			<div class="user-top">
+				<div class="user-pic">
+					<img src="/iot-wechat-douyin/images/ys.png">
+				</div>
+				<div class="user-msg">
+					<span th:text="${user?.realname}"></span>
+					<span th:text="${user?.phone}"></span>
+				</div>
+			</div>
+			<!--卡片信息-->
+			<div class="card-container">
+				<div class="card-item" >
+					<img src="/iot-wechat-douyin/images/qbBg.png" alt="">
+					<div class="card-item-desc">
+						<div>
+							<p class="item-data">
+								<span style="font-size: 14px;" th:text="${money?.noSettle} ? '￥'+${money?.noSettle} :'￥'+'0'"></span>
+							</p>
+							<p>未提现</p>
+						</div>
+					</div>
+				</div>
+				<div class="card-item">
+					<img src="/iot-wechat-douyin/images/qbBg.png" alt="">
+					<div class="card-item-desc" >
+						<div>
+							<p class="item-data" th:text="${money?.hasSettle} ? '￥'+${money?.hasSettle} :'￥'+'0'"></p>
+							<p>已提现</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--功能菜单-->
+			<div class="user-menu">
+				<div class="user-menu-row" onclick="withdrawal()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/order-icon.png" />
+					<span>提现</span>
+				</div>
+				<!--<div class="user-menu-row" onclick="addStore()" th:if="${user?.userType} == 1">
+					<img class="member-icon" src="/iot-wechat-douyin/images/dp.png" />
+					<span>添加店铺</span>
+				</div>
+				<div class="user-menu-row" onclick="storeList()" th:if="${user?.userType} == 1">
+					<img class="member-icon" src="/iot-wechat-douyin/images/user_info.png" />
+					<span>我的店铺</span>
+				</div>
+				<div class="user-menu-row" onclick="cardDistribution()" th:if="${user?.userType} == 1">
+					<img class="member-icon" src="/iot-wechat-douyin/images/bank_card.png" />
+					<span>卡分配</span>
+				</div>
+				<div class="user-menu-row" onclick="addJobLog()" th:if="${user?.userType} == 1">
+					<img class="member-icon" src="/iot-wechat-douyin/images/query-order-icon.png" />
+					<span>添加工作日志</span>
+				</div>-->
+			</div>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script type="text/javascript" th:inline="javascript">
+			let openid = '';
+			$(function () {
+				openid = [[${openid}]];
+			});
+
+			let money = '';
+			$(function () {
+				money = [[${money}]];
+			});
+
+			function withdrawal(){
+				layer.confirm('确定要发起提现吗？', {icon: 3, title:'提示'},
+						function(index){
+							$.ajax({
+								url: "/iot-wechat-douyin/withdrawal",
+								data: {
+									openid: openid,
+									money: JSON.stringify(money)
+								},
+								type: "post",
+								success: function (res) {
+									layer.msg(res.message);
+								},
+								error: function (e) {
+									layer.msg("提现出现异常");
+								}
+							});
+					layer.close(index);
+				});
+			}
+
+			function addStore() {
+				location.href="/iot-wechat-douyin/addStore?openid=" + openid
+			}
+
+			function storeList() {
+				location.href="/iot-wechat-douyin/storeList?openid=" + openid
+			}
+
+			function cardDistribution() {
+				location.href="/iot-wechat-douyin/cardDistribution?openid=" + openid
+			}
+
+			function addJobLog() {
+				location.href="/iot-wechat-douyin/addJobLog?openid=" + openid
+			}
+		</script>
+	</body>
+</html>

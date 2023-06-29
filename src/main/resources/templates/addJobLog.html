@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>添加工作日志</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/login.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="header">
+				<div class="title">
+					<span>添加工作日志</span>
+				</div>
+				<div class="sub-title">
+					<span>推广员登记其发展店铺的详细过程</span>
+				</div>
+			</div>
+			<form class="form" method="post">
+				<input type="hidden" id="openid" name="openid" th:value="${openid}">
+				<div class="form-item">
+					<div class="form-item-input">
+						<label style="display: inline-block;height: 75px;vertical-align: middle;">上传照片：</label>
+						<img id="img" src="/iot-wechat-douyin/images/img_upload.png" onclick="uploadPhoto()" width="75" height="65" />
+						<input type="file" id="photo" name="photo" accept="image/*" onchange="photoChange(this)" style="display: none;">
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<label>日志内容：</label><br><br>
+						<textarea id="content" name="content" rows="6" cols="20" class="input"></textarea>
+					</div>
+				</div>
+				<button type="submit" class="login-button">添加</button>
+			</form>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script type="text/javascript">
+			function uploadPhoto() {
+				$("#photo").click();
+			}
+
+			function photoChange(files) {
+				let file = files.files[0];
+				let path = window.URL.createObjectURL(file);
+				$("#img").attr("src", path);
+			}
+
+			$(".form").submit(function () {
+				let openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请在微信中打开该页面');
+					return false;
+				}
+
+				let content = $("#content").val()
+				if (!content) {
+					layer.msg('请输入日志内容');
+					return false;
+				}
+				let file = $("#photo").prop("files")[0];
+				let formData = new FormData();
+				formData.append('openid', openid);
+				formData.append('content', content);
+				formData.append('photo', file);
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/addJobLog",
+					data: formData,
+					contentType: false,
+					processData: false,
+					type: "post",
+					success: function (res) {
+						if (res.code=='200'){
+							location.href="/iot-wechat-douyin/promoterCenter?openid=" + openid
+						}
+						layer.msg(res.message);
+						layer.close(index);
+					},
+					error: function (e) {
+						layer.msg('添加失败，请重试！');
+						layer.close(index);
+					}
+				});
+				return false;
+			});
+		</script>
+	</body>
+</html>

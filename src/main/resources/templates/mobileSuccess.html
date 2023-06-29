@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="telephone=no" name="format-detection">
+    <title>充值</title>
+    <style>
+        body{text-align:center}
+        .iccid-kong{
+            margin-left:.40rem;
+            padding-top:.20rem;
+            width:100%;
+            height:30px;
+
+        }
+        .botton-word{
+            line-height:50px;
+            margin-bottom:0px;
+            font-family: "Ping Fang";
+        }
+        .botton-icon{
+            height: 50px;
+            line-height: 50px;
+            background: url(/iot-wechat-douyin/images/result-success.png) no-repeat center;
+            background-size: 12%;
+        }
+        .botton-big-2{
+            line-height:100px;
+        }
+        .cancel {
+            background: rgb(255, 255, 255);
+            border: 1px solid #5490af;
+            color: #5e8fff;
+            letter-spacing: 1px;
+            font-family: "Ping Fang";
+            padding: 15px 60px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .button-icon {border-radius: 10px;}
+    </style>
+</head>
+<body>
+<div class="bg">
+    <div class="bg-dx bg-yd">
+        <div class="iccid-kong"></div>
+        <div class="content-iccid content-big content-big-yd"></div>
+        <div class="botton-big">
+            <input type="hidden" id="openid" name="openid" th:value="${openid}">
+            <input type="hidden" id="status" name="status" th:value="${status}">
+            <input type="hidden" id="iccid" name="iccid" th:value="${iccid}">
+            <div class="botton-big-1 botton-one">
+                <div class="botton-icon">
+                    <!--<img src="images/result-success.png">-->
+                </div>
+                <div class="botton-word">恭喜您，充值成功！</div>
+            </div>
+            <div class="botton-big-2">
+                <button id="button1" type="button" class="cancel button-icon" onclick="cancel()"><strong>返 回</strong></button>
+                <button id="button2" type="button" class="cancel button-icon" onclick="realName()"><strong>去 实 名</strong></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+<script src="/iot-wechat-douyin/layer/layer.js"></script>
+<script type="text/javascript">
+    let openid = '';
+    $(function () {
+        openid = $("#openid").val();
+    });
+    let iccid = '';
+    $(function () {
+        iccid = $("#iccid").val();
+    });
+    let status = '';
+    $(function () {
+        status = $("#status").val();
+    });
+    if($("#status").val()=="1"){
+        document.getElementById("button1").style.display="inline";
+        document.getElementById("button2").style.display="none";
+    }else{
+        document.getElementById("button2").style.display="inline";
+        document.getElementById("button1").style.display="none";
+    }
+    function cancel() {
+        location.href = "/iot-wechat-douyin/mobile/userCenter?openid="+openid+"&iccid="+iccid
+    }
+
+    function realName() {
+        //location.href="/iot-wechat-douyin/mobile/user_auth?openid="+openid+"&iccid="+iccid;
+        location.href="/iot-wechat-douyin/mobile/cope?iccid="+iccid+"&openid="+openid;
+    }
+</script>
+</html>

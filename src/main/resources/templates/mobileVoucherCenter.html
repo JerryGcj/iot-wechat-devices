@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>充值中心</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/recharge.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<input type="hidden" id="iccid" th:value="${user?.iccid}">
+		<div class="container">
+			<div class="account-panel" style="display: flex!important">
+				<div class="panel-label">
+					<span>账户余额</span>
+				</div>
+				<div class="panel-balance">
+					<span th:text="'￥' + ${user?.balance ?: '0'}"></span>
+				</div>
+			</div>
+			<div class="recharge-panel">
+				<input type="hidden" id="commodityList" th:value="${commodityList}">
+				<div class="empty" style="display: none;">
+					<img src="/iot-wechat-douyin/images/empty.png">
+					<p>暂无可充值产品~</p>
+				</div>
+				<div class="coupon">
+					<div class="recharge-label">
+						<span>充值金额</span>
+					</div>
+					<div class="recharge-plan">
+						<div class="recharge-plan-item" th:each="commodity,index: ${commodityList}">
+							<span style="display: none" class="product-id" th:text="${commodity.id}"></span>
+							<div class="plan-name">
+								<span th:text="${commodity.name}"></span>
+							</div>
+							<div class="plan-desc">
+								￥<span th:text="${commodity.money}"></span>
+							</div>
+						</div>
+					</div>
+					<div class="recharge-submit">
+						<button class="button" onclick="pay()">立即充值</button>
+					</div>
+				</div>
+			</div>
+			<div class="recharge-describe">
+				<div class="recharge-label">
+					<span>充值说明</span>
+				</div>
+				<div id="tip" class="recharge-content">
+					<span>1. 账户充值仅限微信在线方式支付，充值金额实时到账；<br>
+						2. 账户余额有效期：自充值日起至用完即止；<br>
+						3. 若有其它疑问，可联系公众号客服
+					</span>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+	<script src="/iot-wechat-douyin/layer/layer.js"></script>
+	<script type="text/javascript">
+		let iccid = '';
+		$(function () {
+			iccid = $("#iccid").val();
+		});
+		let commodityList = '';
+		$(function () {
+			commodityList = $("#commodityList").val();
+			$(".coupon").hide();
+			$(".empty").hide();
+			$(".recharge-describe").hide();
+			if(commodityList==null||commodityList==''){
+				$(".empty").show();
+			}else{
+				$(".coupon").show();
+				$(".recharge-describe").show();
+			}
+		});
+		$('.recharge-plan-item').click(function() {
+			$(this).addClass('active').siblings().removeClass('active');
+		});
+
+		// 充值
+		function pay() {
+			let openid = $("#openid").val();
+			if (!openid) {
+				layer.msg('请在微信中打开该页面');
+				return false;
+			}
+			let selected = $('.recharge-plan-item.active');
+			if (selected.length == 0) {
+				layer.msg('请选择充值金额');
+				return false;
+			}
+			let productId = selected.find(".product-id").text();
+			if (!productId) {
+				layer.msg('产品不存在');
+				return false;
+			}
+			let price = selected.find(".plan-desc span").text();
+			let index = layer.load(2);
+			$.ajax({
+				url: "/iot-wechat-douyin/rechargeOrder",
+				data: {
+					openid: openid,
+					productId: productId,
+					price: price
+				},
+				type: "post",
+				success: function (res) {
+					layer.close(index);
+					if (res.success) {
+						if (typeof WeixinJSBridge == "undefined") {
+							if (document.addEventListener) {
+								document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+							} else if (document.attachEvent) {
+								document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+								document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+							}
+						} else {
+							onBridgeReady(res.result,openid);
+						}
+					} else {
+						layer.msg(res.message);
+					}
+				},
+				error: function (e) {
+					layer.close(index);
+					layer.msg('充值失败，请重试！');
+				}
+			});
+		}
+
+		function onBridgeReady(data,openid){
+			WeixinJSBridge.invoke( 'getBrandWCPayRequest', data,
+				function(res) {
+					if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+						console.log('支付成功');
+						location.href="/iot-wechat-douyin/mobile/userCenter?openid="+openid+"&iccid="+iccid;
+					} else if (res.err_msg == "get_brand_wcpay_request:cancel"){
+						layer.msg('支付取消');
+					} else if (res.err_msg == "get_brand_wcpay_request:fail"){
+						layer.msg('支付失败');
+						WeixinJSBridge.call('closeWindow');
+					}
+				});
+		}
+	</script>
+</html>

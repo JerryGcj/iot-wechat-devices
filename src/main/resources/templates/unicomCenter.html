@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<title>用户中心</title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/center.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<input type="hidden" id="openid" th:value="${openid}">
+		<input type="hidden" id="iccid" th:value="${user?.iccid}">
+		<input type="hidden" id="realNameStatus" th:value="${user?.realNameStatus}">
+		<input type="hidden" id="operatorType" th:value="${user?.operatorType}">
+		<input type="hidden" id="msisdn" th:value="${user?.accessNumber}">
+		<input type="hidden" id="isNew" th:value="${user?.isNew}">
+		<input type="hidden" id="input"></input>
+		<div>
+			<!--顶部个人信息-->
+			<div class="user-top">
+				<div class="user-pic">
+					<img src="/iot-wechat-douyin/images/ys.png">
+				</div>
+				<div class="user-msg">
+					<span th:text="${user?.mobile}"></span>
+					<!--<span th:text="${user?.virtualIccid != null ? '卡号：' + user.virtualIccid :''}"></span>-->
+					<span th:if="${user?.type=='0'}" th:text="${'卡号：' + user.virtualIccid}"></span>
+					<span th:if="${user?.type=='1'}" th:text="${'卡号：' + #strings.substring(user.iccid,0,19)}"></span>
+				</div>
+				<!--<div class="space-refund">
+					<div class="btn-refund" onclick="refund()">退 款</div>
+				</div>-->
+			</div>
+
+			<!--用户套餐信息-->
+			<div class="msg-detail">
+				<!--<div class="detail-item">
+					<div class="item-value">
+						<span th:if="${user.packageName=='不限流量'}" th:text="${user.packageName}"></span>
+						<span th:if="${user.packageName==''||user.packageName==null}" th:text="${user?.originUse ?: '0'} + 'G'"></span>
+					</div>
+					<div class="item-name">
+						<span>套餐总量</span>
+					</div>
+				</div>-->
+				<!--<div class="detail-item">
+					<div class="item-value">
+						<span th:text="${user?.usaged ?: '0'} + 'G'"></span>
+					</div>
+					<div class="item-name">
+						<span>套餐用量</span>
+					</div>
+				</div>-->
+				<div class="detail-item">
+					<div class="item-value">
+						<span th:text="${user?.usaged ?: '0'} + 'G'"></span>
+					</div>
+					<div class="item-name">
+						<span>套餐余量</span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<div class="item-value">
+						<span th:text="${user?.cardStatus ?: '无'}"></span>
+					</div>
+					<div class="item-name">
+						<span>设备状态</span>
+					</div>
+				</div>
+				<div class="detail-item">
+					<div class="item-value">
+						<span th:text="${user?.realNameStatus ?: '无'}"></span>
+					</div>
+					<div class="item-name">
+						<span>实名状态</span>
+					</div>
+				</div>
+				<div class="detail-item" style="width: 28%;">
+					<div class="item-value">
+						<span th:text="${user?.validEnd != null ? #strings.substring(user.validEnd,0,10) : '0000-00-00'}"></span>
+					</div>
+					<div class="item-name">
+						<span>到期时间</span>
+					</div>
+				</div>
+			</div>
+			<!--卡片信息-->
+			<div class="card-container" id="cardIn">
+				<div class="card-item" id="cardInfo" onclick="wallet()" style="display: none">
+					<img src="/iot-wechat-douyin/images/qbBg.png" alt="">
+					<div class="card-item-desc">
+						<div>
+							<p class="item-data">
+								<span style="font-size: 14px;" th:text="${user?.balance} ? '￥'+${user?.balance} :'￥'+'0'"></span>
+							</p>
+							<p>钱包</p>
+						</div>
+					</div>
+				</div>
+				<div class="card-item" id="cardInfo1" style="display: none">
+					<img src="/iot-wechat-douyin/images/yhqBg.png" alt="">
+					<div class="card-item-desc"  onclick="coupon()">
+						<div>
+							<p class="item-data" th:text="${user?.couponsCount} ? ${user?.couponsCount} : '0'"></p>
+							<p>优惠券</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--订单中心-->
+			<div class="order-content" id="orderCenter" style="display: none">
+				<div class="user-order">
+					<span>我的订单</span>
+				</div>
+				<div class="order-state-control">
+					<a onclick="rechargeRecord()">
+						<span class="order-state-0"></span>
+						<span>充值记录</span>
+					</a>
+					<a onclick="billDetails()">
+						<span class="order-state-1"></span>
+						<span>消费记录</span>
+					</a>
+				</div>
+			</div>
+			<!--功能菜单-->
+			<div class="user-menu">
+				<div class="user-menu-row" id="recharge" onclick="voucherCenter()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/bank_card.png" />
+					<span>账户充值</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>
+				<div class="user-menu-row" onclick="setMealCenter()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/shoppingcart.png" />
+					<span>套餐购买</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>
+				<div class="user-menu-row" onclick="realNameAuthentication()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/user_info.png" />
+					<span>用户认证</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>
+				<div class="user-menu-row" id="rechargeBill" onclick="billDetails()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/bank_card.png" />
+					<span>充值记录</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>
+				<div class="user-menu-row" onclick="queryFlow()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/cahxun.png" />
+					<span>套餐查询</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>
+				<!--<div class="user-menu-row" onclick="question()">
+					<img class="member-icon" src="/iot-wechat-douyin/images/question-circle-fill.svg" />
+					<span>常见问题</span>
+					<span class="reward-num" v-text="certi.info"></span>
+				</div>-->
+			</div>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script type="text/javascript">
+			let openid = '';
+			$(function () {
+				openid = $("#openid").val();
+			});
+			let iccid = '';
+			$(function () {
+				iccid = $("#iccid").val();
+			});
+			let realNameStatus = '';
+			$(function () {
+				realNameStatus = $("#realNameStatus").val();
+			});
+			let operatorType = '';
+			$(function () {
+				operatorType = $("#operatorType").val();
+			});
+			let msisdn = '';
+			$(function () {
+				msisdn = $("#msisdn").val();
+			});
+			let isNew = '';
+			$(function () {
+				isNew = $("#isNew").val();
+				var cardInfo=document.getElementById('cardInfo');
+				var orderCenter=document.getElementById('orderCenter');
+				var recharge=document.getElementById('recharge');
+				var rechargeBill=document.getElementById('rechargeBill');
+				//新用户
+				if(isNew=="0"){
+					recharge.style.display='block';
+					rechargeBill.style.display='none';
+					cardInfo.style.display='block';
+					orderCenter.style.display='block';
+				}else{
+					recharge.style.display='none';
+					document.getElementById('cardIn').style.display='none';
+				}
+			});
+			//openid='oqNK7s-e1BEKNRzE_5UfJRNZq1Xk';
+			function voucherCenter(){
+				location.href="/iot-wechat-douyin/voucherCenter?openid=" + openid+"&operatorType="+operatorType+"&iccid="+iccid;
+			}
+
+			function wallet(){
+				location.href="/iot-wechat-douyin/unicomWallet?openid=" + openid+"&operatorType="+operatorType+"&iccid="+iccid;
+			}
+
+			function coupon() {
+				location.href="/iot-wechat-douyin/coupon?openid=" + openid;
+			}
+
+			function rechargeRecord(){
+				location.href="/iot-wechat-douyin/rechargeRecord?openid=" + openid+"&operatorType="+operatorType;
+			}
+
+			function billDetails(){
+				location.href="/iot-wechat-douyin/unicomCardPay/billDetails?openid=" + openid+"&iccid="+iccid+"&operatorType="+operatorType;
+			}
+			function setMealCenter(){
+				location.href="/iot-wechat-douyin/unicomMealCenter?openid=" + openid+"&operatorType="+operatorType+"&iccid="+iccid+"&isNew="+isNew;
+			}
+			function question(){
+				location.href="/iot-wechat-douyin/question?openid=" + openid;
+			}
+			function queryFlow(){
+				location.href="/iot-wechat-douyin/unicomCardPay/queryFlow?openid=" + openid+"&iccid="+iccid+"&operatorType="+operatorType;
+			}
+			function realNameAuthentication() {
+				$.ajax({
+					url: "/iot-wechat-douyin/realNameStatus",
+					data: {
+						iccid: iccid,
+						operatorType: operatorType
+					},
+					type: "get",
+					success: function (data) {
+						console.log(data)
+						if(data.code==200){
+							if(data.result.realNameStatus=='1'){
+								layer.msg("您已通过实名认证，无需再次认证");
+								return false;
+							}
+							if(operatorType=="1"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										location.href="/iot-wechat-douyin/userAuth?iccid="+iccid+"&msisdn="+msisdn;
+									}
+								});
+							}
+							if(operatorType=="2"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										//location.href = '/iot-wechat-douyin/toUnicomRegister?iccid='+iccid+"&openid="+openid;
+										layer.open({
+											type: 1,
+											closeBtn: 0,
+											shadeClose: true,
+											title: '请复制以下号码后长按二维码进行认证',
+											content: '<div><br><span style="margin-left: 35px;display: inline-block;vertical-align:middle"><strong style="font-size: 20px;color: red;">'+iccid.substr(0,19)+'</strong></span>' +
+													'<span style="margin-left: 15px;display: inline-block;vertical-align:middle"><button id="copyIccid" type="button" class="btn btn-success">复制</button></span><br><br><img src="/iot-wechat-douyin/images/unicomAuth.png" style="height: 400px; width: 390px"></div>',
+											shade: [0.8, '#393D49'],
+											skin: 'demo-class'
+										});
+										$('#copyIccid').click(function() {
+											let transfer = document.createElement('input');
+											document.body.appendChild(transfer);
+											transfer.value = iccid.substr(0,19);  // 这里表示想要复制的内容
+											transfer.focus();
+											transfer.select();
+											if (document.execCommand('copy')) {
+												document.execCommand('copy');
+											}
+											transfer.blur();
+											document.body.removeChild(transfer);
+											layer.msg('复制成功，请长按识别二维码继续认证', {icon: 1,time: 2000})
+										})
+									}
+								});
+							}
+							if(operatorType=="3"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										layer.confirm("1. 点击按钮复制iccid："+iccid+" 用于实名认证信息录入<br>" +
+												"2. 点击复制按钮后请稍等2~5秒，页面会自动跳转至实名认证界面<br>" +
+												"3. 晚10:00 - 早7:30非实名认证时间，此时间段内请不要进行实名认证<br>" +
+												"4. 如无法正常实名认证，请在公众号内联系客服协助解决", {
+											btn: ['复制'] //按钮
+										}, function(){
+											let transfer = document.createElement('input');
+											document.body.appendChild(transfer);
+											transfer.value = iccid;  // 这里表示想要复制的内容
+											transfer.focus();
+											transfer.select();
+											if (document.execCommand('copy')) {
+												document.execCommand('copy');
+											}
+											transfer.blur();
+											document.body.removeChild(transfer);
+											layer.msg('复制成功，请把当前卡号粘贴到iccid', {icon: 1,time: 2000}, function(){
+												location.href="http://iotapp.iot.189.cn:9090/uapp/certifhtml/certif_entry.html?userCode=nGmFFq6z4WZxGKIgPw+jBw==&passWord=97xjIqkYSeyG6wc5YiqGjA==&openid=9NjnTLQtWQsT/Yw13PxQzVszUN/G61VXYV7AAxiRlNI="
+											});
+										});
+									}
+								});
+							}
+						}else{
+							if(operatorType=="1"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										location.href="/iot-wechat-douyin/userAuth?iccid="+iccid+"&msisdn="+msisdn;
+									}
+								});
+							}
+							if(operatorType=="2"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										//location.href = '/iot-wechat-douyin/toUnicomRegister?iccid='+iccid+"&openid="+openid;
+										layer.open({
+											type: 1,
+											closeBtn: 0,
+											shadeClose: true,
+											title: '请复制以下号码后长按二维码进行认证',
+											content: '<div><br><span style="margin-left: 35px;display: inline-block;vertical-align:middle"><strong style="font-size: 20px;color: red;">'+iccid.substr(0,19)+'</strong></span>' +
+													'<span style="margin-left: 15px;display: inline-block;vertical-align:middle"><button id="copyIccid" type="button" class="btn btn-success">复制</button></span><br><br><img src="/iot-wechat-douyin/images/unicomAuth.png" style="height: 400px; width: 390px"></div>',
+											shade: [0.8, '#393D49'],
+											skin: 'demo-class'
+										});
+										$('#copyIccid').click(function() {
+											let transfer = document.createElement('input');
+											document.body.appendChild(transfer);
+											transfer.value = iccid.substr(0,19);  // 这里表示想要复制的内容
+											transfer.focus();
+											transfer.select();
+											if (document.execCommand('copy')) {
+												document.execCommand('copy');
+											}
+											transfer.blur();
+											document.body.removeChild(transfer);
+											layer.msg('复制成功，请长按识别二维码继续认证', {icon: 1,time: 2000})
+										})
+									}
+								});
+							}
+							if(operatorType=="3"){
+								$.ajax({
+									url: "/iot-wechat-douyin/succOrder",
+									data: {
+										iccid: iccid,
+										operatorType: operatorType
+									},
+									type: "get",
+									success: function (data) {
+										if(data.code==500){
+											layer.msg("请购买套餐后再进行用户认证");
+											return false;
+										}
+										layer.confirm("点击按钮复制iccid："+iccid, {
+											btn: ['复制'] //按钮
+										}, function(){
+											let transfer = document.createElement('input');
+											document.body.appendChild(transfer);
+											transfer.value = iccid;  // 这里表示想要复制的内容
+											transfer.focus();
+											transfer.select();
+											if (document.execCommand('copy')) {
+												document.execCommand('copy');
+											}
+											transfer.blur();
+											document.body.removeChild(transfer);
+											layer.msg('复制成功，请把当前卡号粘贴到iccid', {icon: 1,time: 2000}, function(){
+												location.href="http://iotapp.iot.189.cn:9090/uapp/certifhtml/certif_entry.html?userCode=nGmFFq6z4WZxGKIgPw+jBw==&passWord=97xjIqkYSeyG6wc5YiqGjA==&openid=9NjnTLQtWQsT/Yw13PxQzVszUN/G61VXYV7AAxiRlNI="
+											});
+										});
+									}
+								});
+							}
+						}
+					}
+				});
+			}
+			function refund(){
+				layer.confirm('确定要申请退款吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/iot-wechat-douyin/refund",
+						data: {
+							openid: openid
+						},
+						type: "post",
+						success: function (res) {
+							layer.msg(res.message,{
+								shade: [0.8, '#393D49'],
+								shadeClose: true,
+								time:3000
+							});
+
+						},
+						error: function (e) {
+							layer.msg("提现出现异常");
+						}
+					});
+					layer.close(index);
+				});
+			}
+		</script>
+	</body>
+</html>

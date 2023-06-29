@@ -1,0 +1,90 @@
+.container {
+	background: #fff;
+	display: block;
+}
+.space-upper {
+	padding: 75px 0;
+	text-align: center;
+}
+.wallet-account {
+	margin-top: 10px;
+}
+.wallet-account_balance {
+	font-size: 26px;
+}
+.wallet-account_lable {
+	margin-top: 5px;
+	color: #cec1c1;
+	font-size: 12px;
+}
+.space-lower {
+	margin-top: 15px;
+	padding: 0 55px;
+}
+.btn-submit {
+	width: 200px;
+	height: 42px;
+	line-height: 42px;
+	margin: 0 auto;
+	text-align: center;
+	-webkit-border-radius: 25px;
+	border-radius: 25px;
+	background: #786cff;
+	color: #fff;
+	font-size: 15px;
+}
+
+.refund-submit {
+	width: 200px;
+	height: 42px;
+	line-height: 42px;
+	margin: 0 auto;
+	text-align: center;
+	-webkit-border-radius: 25px;
+	border-radius: 25px;
+	background: #e81243;
+	color: #fff;
+	font-size: 15px;
+}
+.space-refund {
+	margin-top: 15px;
+	padding: 0 300px;
+}
+.btn-refund {
+	width: 40px;
+	height: 20px;
+	line-height: 20px;
+	margin: 0 auto;
+	text-align: center;
+	-webkit-border-radius: 20px;
+	border-radius: 20px;
+	background: gray;
+	color: #fff;
+	font-size: 12px;
+}
+.tip {
+	border-left-color: #f66;
+	color: #666;
+	margin: 2em 1em;
+	border-left-width: 4px;
+	background-color: #f8f8f8;
+	position: relative;
+	border-bottom-right-radius: 2px;
+	border-top-right-radius: 2px;
+}
+.tip::before {
+	content: "!";
+	background-color: #f1c644;
+	position: absolute;
+	top: 9px;
+	left: -12px;
+	color: #fff;
+	width: 20px;
+	height: 20px;
+	border-radius: 100%;
+	text-align: center;
+	line-height: 20px;
+	font-weight: bold;
+	font-family: "Dosis", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+	font-size: 14px;
+}

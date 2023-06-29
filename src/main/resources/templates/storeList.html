@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>我的店铺</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="screen-orientation" content="portrait">
+		<meta name="x5-orientation" content="portrait">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/record.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="record-container">
+			<div class="record-item" th:each="store,index: ${storeList}">
+				<div class="item-left">
+					<div class="record-status">
+						店铺名称：<span th:text="${store.userCompany}"></span>
+					</div>
+					<div class="record-status">
+						联系方式：<span th:text="${store.phone}"></span>
+					</div>
+					<div class="record-time">
+						店铺地址：<span th:text="${store.storeAddress}"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+
+		</script>
+	</body>
+</html>

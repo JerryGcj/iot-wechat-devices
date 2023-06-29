@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>添加店铺</title>
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/login.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="header">
+				<div class="title">
+					<span>添加店铺</span>
+				</div>
+				<div class="sub-title">
+					<span>推广员登记其发展店铺的信息</span>
+				</div>
+			</div>
+			<form class="form" method="post">
+				<input type="hidden" id="openid" name="openid" th:value="${openid}">
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="text" id="username" name="username" maxlength="20" autocomplete="off" class="input" placeholder="请输入联系人姓名">
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="phone" name="phone" maxlength="11" autocomplete="off" class="input" placeholder="请输入手机号码">
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="text" id="storeName" name="storeName" maxlength="50" autocomplete="off" class="input" placeholder="请输入店铺名称">
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<textarea id="address" name="address" rows="3" cols="20" class="input" placeholder="请输入店铺地址"></textarea>
+					</div>
+				</div>
+				<button type="submit" class="login-button">添加</button>
+			</form>
+		</div>
+
+		<script src="/iot-wechat-douyin/js/jquery-1.11.2.min.js"></script>
+		<script src="/iot-wechat-douyin/layer/layer.js"></script>
+		<script type="text/javascript">
+			const phoneReg = /^1[0-9]{10}$/;
+
+			$(".form").submit(function () {
+				let openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请在微信中打开该页面');
+					return false;
+				}
+
+				let username = $("#username").val()
+				if (!username) {
+					layer.msg('请输入联系人姓名');
+					return false;
+				}
+
+				let phone = $("#phone").val();
+				if (!phone) {
+					layer.msg('请输入手机号码');
+					return false;
+				}
+				if (!phoneReg.test(phone)) {
+					layer.msg('手机号格式不正确');
+					return false;
+				}
+
+				let storeName = $("#storeName").val()
+				if (!storeName) {
+					layer.msg('请输入店铺名称');
+					return false;
+				}
+
+				let address = $("#address").val()
+				if (!address) {
+					layer.msg('请输入店铺地址');
+					return false;
+				}
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/addStore",
+					data: {
+						openid: openid,
+						username: username,
+						phone: phone,
+						storeName: storeName,
+						address: address
+					},
+					type: "post",
+					success: function (res) {
+						if (res.code=='200'){
+							location.href="/iot-wechat-douyin/promoterCenter?openid=" + openid
+						}
+						layer.msg(res.message);
+						layer.close(index);
+					},
+					error: function (e) {
+						layer.msg('添加失败，请重试！');
+						layer.close(index);
+					}
+				});
+				return false;
+			});
+		</script>
+	</body>
+</html>

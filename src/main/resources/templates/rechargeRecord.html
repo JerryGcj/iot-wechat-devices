@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>充值记录</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="screen-orientation" content="portrait">
+		<meta name="x5-orientation" content="portrait">
+		<link rel="stylesheet" type="text/css" href="/iot-wechat-douyin/css/record.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="record-container">
+			<div class="norecord" th:if="${rechargeRecordList==null}">
+				<img src="/iot-wechat-douyin/images/empty.png">
+				<p>暂无记录~</p>
+			</div>
+			<div class="record-item" th:each="rechargeRecord,index: ${rechargeRecordList}">
+				<div class="item-left">
+					<div class="record-status">
+						<span th:if="${rechargeRecord.status} == 0">未支付</span>
+						<span th:if="${rechargeRecord.status} == 1">支付退出</span>
+						<span th:if="${rechargeRecord.status} == 2">支付异常</span>
+						<span th:if="${rechargeRecord.status} == 3">支付失败</span>
+						<span th:if="${rechargeRecord.status} == 4">支付成功</span>
+						<span th:if="${rechargeRecord.status} == 5">退款失败</span>
+						<span th:if="${rechargeRecord.status} == 6">退款成功</span>
+						<span th:if="${rechargeRecord.status} == 7">充值成功</span>
+						<span th:if="${rechargeRecord.status} == 8">充值失败</span>
+					</div>
+					<div class="record-time">
+						<span th:text="${rechargeRecord.createTime}"></span>
+					</div>
+				</div>
+				<div class="item-right">
+					<span th:text="'+'+${rechargeRecord.money}+'元'"></span>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+
+		</script>
+	</body>
+</html>

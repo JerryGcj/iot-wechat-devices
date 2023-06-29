@@ -1,0 +1,210 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+.user-top {
+	width: 100%;
+	padding: 18px 0 18px 15px;
+	overflow: hidden;
+}
+
+.user-pic {
+	float: left;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	overflow: hidden;
+	background: #F5F5F5;
+}
+
+.user-pic>img {
+	width: 100%;
+	height: 100%;
+}
+
+.user-msg {
+	display: flex;
+	flex-direction: column;
+	width: 180px;
+}
+
+.user-msg span {
+	font-size: 15px;
+	color: #020202;
+	font-weight: 700;
+	line-height: 12px;
+	margin-top: 20px;
+	margin-left: 10px;
+}
+
+.user-msg span:nth-child(2) {
+	font-size: 10px;
+	margin-top: 10px;
+}
+
+
+.msg-detail {
+	display: flex;
+	background: #fff;
+	padding: 16px 0;
+	border-bottom: 5px solid #EDEDED;
+}
+.msg-detail .detail-item {
+	color: #666;
+	text-align: center;
+	width: 25%;
+}
+.detail-item .item-value {
+	font-size: 16px;
+	color: red;
+}
+
+.detail-item .item-name {
+	font-size: 12px;
+	margin-top: 10px;
+}
+
+.card-container {
+	background-color: #fff;
+	margin-bottom: 11px;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	padding: 16px;
+}
+
+.card-item {
+	width: 135px;
+	height: 77px;
+	position: relative;
+}
+
+.card-item img {
+	position: absolute;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+}
+
+.card-item-desc {
+	position: relative;
+	z-index: 2;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	height: 100%;
+	text-align: center;
+	color: #666;
+	font-size: 13px;
+}
+
+.item-data {
+	color: #333;
+	font-size: 17px;
+	font-weight: 600;
+	margin-bottom: 5px;
+}
+
+.order-content {
+	width: 100%;
+	border-top: 5px solid #EDEDED;
+}
+
+.user-order {
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	padding-left: 14px;
+	border-bottom: 1px solid #EDEDED;
+	overflow: hidden;
+	position: relative;
+	font-size: 14px;
+	color: #333333;
+}
+
+.order-state-control {
+	width: 100%;
+	display: table;
+}
+
+.order-state-control>a {
+	display: table-cell;
+	font-size: 14px;
+	color: #333333;
+	text-align: center;
+	padding: 15px 0;
+}
+
+.order-state-control>a>span {
+	float: left;
+	width: 100%;
+	position: relative;
+}
+
+.order-state-control>a>span:last-of-type {
+	margin-top: 10px;
+}
+
+.order-state-0 {
+	height: 25px;
+	background: url(/iot-wechat-douyin/images/confirm.png) center center no-repeat;
+	background-size: 18px 19px;
+}
+
+.order-state-1 {
+	height: 25px;
+	background: url(/iot-wechat-douyin/images/auditing.png) center center no-repeat;
+	background-size: 15px 20px;
+}
+
+.user-menu {
+	width: 100%;
+	border-top: 5px solid #EDEDED;
+}
+
+.user-menu-row {
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	padding: 0 15px;
+	border-bottom: 1px solid #EDEDED;
+	clear: both;
+}
+
+.member-icon {
+	width: 20px;
+	height: 20px;
+	float: left;
+	margin: 14px 4px 0 0;
+}
+
+.user-menu-row>span {
+	float: left;
+	font-size: 14px;
+	color: #333333;
+	margin: 0 0 0 14px;
+}
+
+.space-refund {
+	padding: 0px 0 0px 300px;
+	margin-top: -30px;
+}
+.btn-refund {
+	width: 35px;
+	height: 20px;
+	line-height: 20px;
+	margin: 0 auto;
+	text-align: center;
+	-webkit-border-radius: 20px;
+	border-radius: 20px;
+	background: #e5e1e1;
+	color: #fff;
+	font-size: 10px;
+}

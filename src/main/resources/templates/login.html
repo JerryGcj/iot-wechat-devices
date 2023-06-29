@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>登录</title>
+		<link rel="stylesheet" type="text/css" href="css/login.css" />
+		<style type="text/css">
+
+		</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="header">
+				<div class="title">
+					<span>手机号登录</span>
+				</div>
+				<div class="sub-title">
+					<span>未注册的手机号请联系管理员注册</span>
+				</div>
+			</div>
+			<form class="form" method="post">
+				<input type="hidden" id="openid" name="openid" th:value="${openid}">
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="phone" name="phone" maxlength="11" autocomplete="off" placeholder="请输入手机号码" required>
+					</div>
+				</div>
+				<div class="form-item">
+					<div class="form-item-input">
+						<input type="number" id="captchaSms" name="captchaSms" maxlength="6" autocomplete="off" placeholder="请输入短信验证码" required>
+					</div>
+					<div class="captcha-sms">
+						<span class="activate">获取验证码</span>
+					</div>
+				</div>
+				<button type="submit" class="login-button">登录</button>
+			</form>
+		</div>
+
+		<script src="js/jquery-1.11.2.min.js"></script>
+		<script src="layer/layer.js"></script>
+		<script type="text/javascript">
+			let openid = '';
+			$(function () {
+				openid = $("#openid").val();
+				if (!openid) {
+					layer.msg('请从微信公众号进入页面');
+					return false;
+				}
+			});
+
+			const phoneReg = /^1[0-9]{10}$/;
+
+			// 点击发送验证码
+			$('.captcha-sms').click(function() {
+				let phone = $("#phone").val();
+				if (!phone) {
+					layer.msg('请输入手机号码');
+					return false;
+				}
+				if (!phoneReg.test(phone)) {
+					layer.msg('手机号格式不正确');
+					return false;
+				}
+
+				// 根据手机号查询用户是否存在
+				queryUserByPhone(phone);
+			});
+
+			/**
+			 * 根据手机号查询用户是否存在
+			 * @param phone
+			 */
+			function queryUserByPhone(phone) {
+				$.ajax({
+					url: "/iot-wechat-douyin/queryUserByPhone",
+					data: {
+						phone: phone
+					},
+					type: "get",
+					success: function (res) {
+						if (!res.success) {
+							layer.msg('用户不存在');
+						} else {
+							sendCaptcha(phone);
+						}
+					}
+				});
+			}
+
+			/**
+			 * 发送验证码
+			 * @param phone
+			 */
+			function sendCaptcha(phone) {
+				countDownHandler();
+
+				$.ajax({
+					dataType: "json",
+					url: "/iot-wechat-douyin/common/sendCaptcha",
+					data: { mobile : phone },
+					type: "post",
+					success: function(data) {
+						layer.msg(data.msg);
+					},
+					error: function () {
+						layer.msg('验证码发送异常');
+					}
+				});
+			}
+
+			/**
+			 * 验证码倒计时
+			 */
+			function countDownHandler() {
+				let count = 60;
+				const countDown = setInterval(() => {
+					if (count === 0) {
+						$('.captcha-sms').attr('disabled', 'disabled');
+						$('.captcha-sms').text('重新发送');
+						$('.captcha-sms').removeClass('disable');
+						clearInterval(countDown);
+					} else {
+						$('.captcha-sms').attr('disabled', true);
+						$('.captcha-sms').addClass('disable');
+						$('.captcha-sms').text(count + '秒后重发');
+					}
+					count--;
+				}, 1000);
+			}
+
+			// 登录
+			$(".form").submit(function () {
+				let phone = $("#phone").val();
+				if (!phone) {
+					layer.msg('请输入手机号码');
+					return false;
+				}
+				if (!phoneReg.test(phone)) {
+					layer.msg('手机号格式不正确');
+					return false;
+				}
+
+				let captchaSms = $("#captchaSms").val()
+				if (!captchaSms) {
+					layer.msg('请输入短信验证码');
+					return false;
+				}
+				let index = layer.load(2);
+				$.ajax({
+					url: "/iot-wechat-douyin/login",
+					data: {
+						openid: openid,
+						phone: phone,
+						captchaSms: captchaSms
+					},
+					type: "post",
+					success: function (res) {
+						layer.close(index);
+						if (res.success) {
+							location.href="/iot-wechat-douyin/promoterCenter?openid=" + openid;
+						} else {
+							layer.msg(res.message);
+						}
+					},
+					error: function (e) {
+						layer.close(index);
+						layer.msg('登录失败，请重试！');
+					}
+				});
+				return false;
+			});
+		</script>
+	</body>
+</html>
